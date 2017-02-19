@@ -10,5 +10,6 @@ extension Droplet {
 }
 
 let drop = Droplet()
+drop.middleware.append(GlobalErrorHandlerMiddleware())
 drop.registerHelloController()
 drop.run()

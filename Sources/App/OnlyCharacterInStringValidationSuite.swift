@@ -6,6 +6,11 @@ class NameValidationSuite: ValidationSuite {
         if(value.range(of:"[0-9]", options: .regularExpression) != nil) {
             throw Abort.badRequest
         }
-        return try OnlyAlphanumeric.validate(input: value)
+        do {
+            return try OnlyAlphanumeric.validate(input: value)
+        } catch {
+            throw Abort.badRequest
+        }
+
     }
 }
