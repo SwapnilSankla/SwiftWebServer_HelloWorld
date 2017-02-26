@@ -1,26 +1,21 @@
 import Foundation
 import Vapor
 
-extension Droplet {
-    func registerHelloController(logger: Logger) {
-        let helloController = HelloController(logger: logger)
-        get("/hello", handler: helloController.get)
-        post("/hello", handler: helloController.post)
-    }
-
-    func createLogger() -> Logger {
-        return environment == .development ? Logger(loggingEnabled: true) :
-                                             Logger(loggingEnabled: false)
-    }
+private func registerMiddlewares(droplet: Droplet) {
+    droplet.middleware.append(GlobalErrorHandlerMiddleware())
+    droplet.middleware.append(VersioningMiddleware())
+    droplet.middleware.append(CookieMiddleware())
 }
 
-let drop = Droplet()
+private func registerHelloController(droplet: Droplet, logger: Logger) {
+    let helloController = HelloController(logger: logger)
+    droplet.get("/hello", handler: helloController.get)
+    droplet.post("/hello", handler: helloController.post)
+}
 
-drop.middleware.append(GlobalErrorHandlerMiddleware())
-drop.middleware.append(VersioningMiddleware())
-drop.middleware.append(CookieMiddleware())
+let droplet = Droplet()
+let logger = droplet.createLogger()
+registerMiddlewares(droplet: droplet)
+registerHelloController(droplet: droplet, logger: logger)
+droplet.run()
 
-let logger = drop.createLogger()
-
-drop.registerHelloController(logger: logger)
-drop.run()
