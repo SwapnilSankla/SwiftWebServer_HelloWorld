@@ -1,2 +1,2 @@
 vapor build
-vapor run
+vapor run $1
